@@ -73,6 +73,28 @@ trait ConfiguredXmlToCsv
         return implode($this->csvEolString, $sReturn);
     }
 
+    private function processMultipleInstancesOfSameElement($config, $arr, $name)
+    {
+        $crncy     = $config['features'][$name]['multiple']['currency'];
+        $optnl     = $config['features'][$name]['multiple']['discounter'];
+        $minValues = [];
+        foreach ($arr as $key => $value) {
+            if ($key == $name) {
+                foreach ($value->attributes() as $key2 => $val2) {
+                    switch ($key2) {
+                        case $crncy:
+                            $minValues[] = (int) $val2;
+                            break;
+                        case $optnl:
+                            $minValues[] = $value->attributes()[$crncy] - ($value->attributes()[$crncy] * $val2) / 100;
+                            break;
+                    }
+                }
+            }
+        }
+        return min($minValues);
+    }
+
     protected function readConfiguration($filePath, $fileBaseName)
     {
         $jSonContent = $this->readFileContent($filePath, $fileBaseName);
@@ -96,25 +118,8 @@ trait ConfiguredXmlToCsv
                 $cleanedData = (int) $data;
                 break;
             case 'multiple':
-                $crncy       = $config['features'][$name]['multiple']['currency'];
-                $optnl       = $config['features'][$name]['multiple']['discounter'];
                 $arr         = $xmlIterator->current();
-                $minValues   = [];
-                foreach ($arr as $key => $value) {
-                    if ($key == $name) {
-                        foreach ($value->attributes() as $key2 => $value2) {
-                            switch ($key2) {
-                                case $crncy:
-                                    $minValues[] = (int) $value2;
-                                    break;
-                                case $optnl:
-                                    $minValues[] = $value->attributes()[$crncy] - ($value->attributes()[$crncy] * $value2) / 100;
-                                    break;
-                            }
-                        }
-                    }
-                }
-                $cleanedData = min($minValues);
+                $cleanedData = $this->processMultipleInstancesOfSameElement($config, $arr, $name);
                 break;
             case 'string':
                 $cleanedData = $data;
