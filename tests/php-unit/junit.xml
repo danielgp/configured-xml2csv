@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="" tests="1" assertions="1" failures="0" errors="0" time="0.013974">
-    <testsuite name="ConfiguredXmlToCsvTest" file="C:\www\Data\GitRepositories\GitHub\danielgp\configured-xml2csv\tests\php-unit\ConfiguredXmlToCsvTest.php" tests="1" assertions="1" failures="0" errors="0" time="0.013974">
-      <testcase name="testIsAnagramValidWordsWithoutSpaceSameCapsFalse" class="ConfiguredXmlToCsvTest" file="C:\www\Data\GitRepositories\GitHub\danielgp\configured-xml2csv\tests\php-unit\ConfiguredXmlToCsvTest.php" line="33" assertions="1" time="0.013974"/>
+  <testsuite name="" tests="1" assertions="1" failures="0" errors="0" time="0.025032">
+    <testsuite name="ConfiguredXmlToCsvTest" file="C:\www\Data\GitRepositories\GitHub\danielgp\configured-xml2csv\tests\php-unit\ConfiguredXmlToCsvTest.php" tests="1" assertions="1" failures="0" errors="0" time="0.025032">
+      <testcase name="testIsAnagramValidWordsWithoutSpaceSameCapsFalse" class="ConfiguredXmlToCsvTest" file="C:\www\Data\GitRepositories\GitHub\danielgp\configured-xml2csv\tests\php-unit\ConfiguredXmlToCsvTest.php" line="33" assertions="1" time="0.025032"/>
     </testsuite>
   </testsuite>
 </testsuites>
