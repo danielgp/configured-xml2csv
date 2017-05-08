@@ -1,0 +1,3 @@
+ConfiguredXmlToCsv
+ [x] Is anagram valid words without space same caps false
+
