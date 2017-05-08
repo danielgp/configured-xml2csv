@@ -1,0 +1,40 @@
+{
+    "features": {
+        "Title": {
+            "header": "Title",
+            "type": "string",
+            "transformation": [
+                "html_entity_decode"
+            ]
+        },
+        "Code": {
+            "header": "Code",
+            "type": "string"
+        },
+        "Duration": {
+            "header": "Duration",
+            "type": "integer"
+        },
+        "Inclusions": {
+            "header": "Inclusions",
+            "type": "string",
+            "transformation": [
+                "strip_tags",
+                "str_replace__nbsp__space",
+                "str_replace__double_space",
+                "str_replace__tripple_space",
+                "htmlspecialchars",
+                "trim"
+            ]
+        },
+        "DEP": {
+            "header": "MinPrice",
+            "type": "multiple",
+            "multiple": {
+                "currency": "EUR",
+                "discounter": "DISCOUNT",
+                "evaluation type": "minimum"
+            }
+        }
+    }
+}
