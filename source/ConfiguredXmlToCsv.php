@@ -32,11 +32,20 @@ trait ConfiguredXmlToCsv
     protected $csvEolString;
     protected $csvFieldSeparator;
 
-    private function cleanStringElement($initialString, $desiredCleaningTechniques)
+    private function cleanStringElement($initialString, $configuredFeatures)
+    {
+        $cleanedString = $initialString;
+        if (array_key_exists('transformation', $configuredFeatures)) {
+            $cleanedString = $this->cleanStringElementSpecific($initialString, $configuredFeatures);
+        }
+        return $cleanedString;
+    }
+
+    private function cleanStringElementSpecific($initialString, $configuredFeatures)
     {
         $knownCleaningTechniques = $this->knownCleaningTechniques();
         $cleanedString           = $initialString;
-        foreach ($desiredCleaningTechniques as $crtCleaningTechnique) {
+        foreach ($configuredFeatures['transformation'] as $crtCleaningTechnique) {
             if (is_array($knownCleaningTechniques[$crtCleaningTechnique])) {
                 $cleanedString = call_user_func_array($knownCleaningTechniques[$crtCleaningTechnique][0], [
                     $knownCleaningTechniques[$crtCleaningTechnique][1],
@@ -50,6 +59,12 @@ trait ConfiguredXmlToCsv
         return $cleanedString;
     }
 
+    private function evaluateMultipleInstanceOfSameElement($desiredEvaluationType, $arrayValues)
+    {
+        $knownEvaluationTechniques = $this->knownEvaluationTechniques();
+        return call_user_func($knownEvaluationTechniques[$desiredEvaluationType], $arrayValues);
+    }
+
     private function knownCleaningTechniques()
     {
         return [
@@ -60,6 +75,14 @@ trait ConfiguredXmlToCsv
             'str_replace__tripple_space' => ['str_replace', '   ', ' '],
             'strip_tags'                 => 'strip_tags',
             'trim'                       => 'trim',
+        ];
+    }
+
+    private function knownEvaluationTechniques()
+    {
+        return [
+            'minimum' => 'min',
+            'maximum' => 'max',
         ];
     }
 
@@ -77,22 +100,15 @@ trait ConfiguredXmlToCsv
     {
         $crncy     = $config['features'][$name]['multiple']['currency'];
         $optnl     = $config['features'][$name]['multiple']['discounter'];
-        $minValues = [];
-        foreach ($arr as $key => $value) {
+        $mnyValues = [];
+        foreach ($arr as $key => $val) {
+            $attribs = $val->attributes();
             if ($key == $name) {
-                foreach ($value->attributes() as $key2 => $val2) {
-                    switch ($key2) {
-                        case $crncy:
-                            $minValues[] = (int) $val2;
-                            break;
-                        case $optnl:
-                            $minValues[] = $value->attributes()[$crncy] - ($value->attributes()[$crncy] * $val2) / 100;
-                            break;
-                    }
-                }
+                $mnyValues[] = $attribs[$crncy] - ($attribs[$crncy] * $attribs[$optnl]) / 100;
             }
         }
-        return min($minValues);
+        $evalType = $config['features'][$name]['multiple']['evaluation type'];
+        return $this->evaluateMultipleInstanceOfSameElement($evalType, $mnyValues);
     }
 
     protected function readConfiguration($filePath, $fileBaseName)
@@ -122,11 +138,12 @@ trait ConfiguredXmlToCsv
                 $cleanedData = $this->processMultipleInstancesOfSameElement($config, $arr, $name);
                 break;
             case 'string':
-                $cleanedData = $data;
-                if (array_key_exists('transformation', $config['features'][$name])) {
-                    $tr          = $config['features'][$name]['transformation'];
-                    $cleanedData = $this->cleanStringElement($cleanedData, $tr);
-                }
+                $cleanedData = $this->cleanStringElement($data, $config['features'][$name]);
+//                $cleanedData = $data;
+//                if (array_key_exists('transformation', $config['features'][$name])) {
+//                    $tr          = $config['features'][$name]['transformation'];
+//                    $cleanedData = $this->cleanStringElement($cleanedData, $tr);
+//                }
                 break;
         }
         return $cleanedData;
