@@ -139,11 +139,6 @@ trait ConfiguredXmlToCsv
                 break;
             case 'string':
                 $cleanedData = $this->cleanStringElement($data, $config['features'][$name]);
-//                $cleanedData = $data;
-//                if (array_key_exists('transformation', $config['features'][$name])) {
-//                    $tr          = $config['features'][$name]['transformation'];
-//                    $cleanedData = $this->cleanStringElement($cleanedData, $tr);
-//                }
                 break;
         }
         return $cleanedData;
